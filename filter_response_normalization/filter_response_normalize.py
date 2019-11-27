@@ -106,6 +106,46 @@ class ThresholdedLinearUnit(nn.Module):
             return input
         else:
             return torch.max(input, self.tau)
+
+class ThresholdedLinearUnitFix1D(nn.Module):
+    _version = 2
+    __constants__ = ['tau']
+    
+    def __init__(self, num_features, inplace=True):
+        super(ThresholdedLinearUnitFix, self).__init__()
+        self.inplace = inplace
+        self.tau = nn.parameter.Parameter(torch.Tensor(1, num_features, 1))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.zeros_(self.tau)
+        
+    def forward(self, input):
+        if self.inplace:
+            input = torch.max(input, self.tau)
+            return input
+        else:
+            return torch.max(input, self.tau)
+        
+class ThresholdedLinearUnitFix2D(nn.Module):
+    _version = 2
+    __constants__ = ['tau']
+    
+    def __init__(self, num_features, inplace=True):
+        super(ThresholdedLinearUnitFix, self).__init__()
+        self.inplace = inplace
+        self.tau = nn.parameter.Parameter(torch.Tensor(1, num_features, 1, 1))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.zeros_(self.tau)
+        
+    def forward(self, input):
+        if self.inplace:
+            input = torch.max(input, self.tau)
+            return input
+        else:
+            return torch.max(input, self.tau)
     
         
 def convert_model(module):
