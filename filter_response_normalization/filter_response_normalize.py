@@ -50,8 +50,28 @@ class FilterResponseNorm2d(nn.Module):
         self._check_input_dim(input)
         nu2 = torch.mean(input**2, axis=[2, 3], keepdims=True)
         input = input * torch.rsqrt(nu2 + torch.abs(self.eps))
-        return torch.max(self.gamma * input + self.beta, self.tau)
-       
+        return self.gamma * input + self.beta
+    
+class ThresholdedLinearUnit(nn.Module):
+    _version = 2
+    __constants__ = ['tau']
+    
+    def __init__(self, inplace=True):
+        super(ThresholdedLinearUnit, self).__init__()
+        self.inplace = inplace
+        self.tau = nn.parameter.Parameter(torch.Tensor(1))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.zeros_(self.tau)
+        
+    def forward(self, input):
+        if self.inplace:
+            input = torch.max(input, self.tau)
+            return input
+        else:
+            return torch.max(input, self.tau)
+    
         
 def convert_model(module):
     """Traverse the input module and its child recursively
@@ -79,8 +99,10 @@ def convert_model(module):
     mod = module
     if isinstance(module, torch.nn.modules.batchnorm.BatchNorm2d):
         mod = FilterResponseNorm2d(module.num_features, module.eps)
-
+    elif isinstance(module, torch.nn.ReLU):
+        mod = ThresholdedLinearUnit(inplace = module.inplace)
     for name, child in module.named_children():
         mod.add_module(name, convert_model(child))
 
     return mod
+
