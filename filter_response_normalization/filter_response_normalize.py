@@ -101,11 +101,7 @@ class ThresholdedLinearUnit(nn.Module):
         nn.init.zeros_(self.tau)
         
     def forward(self, input):
-        if self.inplace:
-            return torch.max(input, self.tau)
-        else:
-            input = torch.max(input, self.tau)
-            return input
+        return torch.max(input, self.tau)
             
 class ThresholdedLinearUnitFix1D(nn.Module):
     _version = 2
@@ -121,11 +117,7 @@ class ThresholdedLinearUnitFix1D(nn.Module):
         nn.init.zeros_(self.tau)
         
     def forward(self, input):
-        if self.inplace:
-            return torch.max(input, self.tau)
-        else:
-            input = torch.max(input, self.tau)
-            return input
+        return torch.max(input, self.tau)
         
 class ThresholdedLinearUnitFix2D(nn.Module):
     _version = 2
@@ -141,11 +133,7 @@ class ThresholdedLinearUnitFix2D(nn.Module):
         nn.init.zeros_(self.tau)
         
     def forward(self, input):
-        if self.inplace:
-            return torch.max(input, self.tau)
-        else:
-            input = torch.max(input, self.tau)
-            return input
+        return torch.max(input, self.tau)
     
         
 def convert_model(module):
