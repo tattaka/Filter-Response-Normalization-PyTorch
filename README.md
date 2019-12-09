@@ -20,9 +20,9 @@ print(y.size()) # Output:torch.Size([3, 1000])
 
 
 ## Issue
-* Change input shape of TLU  
+* ~Change input shape of TLU  
     In paper implement, threshold shape of `ThresholdedLinearUnit` is `(1, channels, 1, 1) `  
-    But in this implement, `ThresholdedLinearUnit` threshold is **scolor**. So if you do not use the convert_model function, use ThresholdedLinearUnitFixND.
-
+    But in this implement, `ThresholdedLinearUnit` threshold is **scolor**. So if you do not use the convert_model function, use ThresholdedLinearUnitFixND.~  
+It was solved by [qubvel](https://github.com/qubvel) contribution. :tada:
 
 Distributed under **MIT License** (See LICENSE)
