@@ -67,7 +67,7 @@ class FilterResponseNorm1d(_FilterResponseNorm):
         
     def forward(self, input):
         self._check_input_dim(input)
-        nu2 = input ** 2
+        nu2 = input.pow(2)
 #         nu2 = torch.mean(input ** 2, axis=1, keepdims=True)
         input = input * torch.rsqrt(nu2 + torch.abs(self.eps) + self._eps)
         output = self.gamma * input + self.beta
@@ -93,7 +93,7 @@ class FilterResponseNorm2d(_FilterResponseNorm):
         
     def forward(self, input):
         self._check_input_dim(input)
-        nu2 = torch.mean(input ** 2, axis=[2, 3], keepdims=True)
+        nu2 = torch.mean(input.pow(2), axis=[2, 3], keepdims=True)
         input = input * torch.rsqrt(nu2 + torch.abs(self.eps) + self._eps)
         output = self.gamma * input + self.beta
         if self.activated:
