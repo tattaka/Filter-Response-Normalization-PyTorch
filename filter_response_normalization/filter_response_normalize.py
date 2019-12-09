@@ -54,29 +54,30 @@ class _FilterResponseNorm(nn.Module):
     def _check_input_dim(self, input):
         raise NotImplementedError
 
-    def forward(self, input):
-        self._check_input_dim(input)
-        nu2 = torch.mean(input ** 2, axis=2, keepdims=True)
-        input = input * torch.rsqrt(nu2 + torch.abs(self.eps) + self._eps)
-        output = self.gamma * input + self.beta
-        if self.activated:
-            output = torch.max(output, self.tau)
-        return output
-
 
 class FilterResponseNorm1d(_FilterResponseNorm):
 
     def __init__(self, num_features, activated=True, eps=1e-6, eps_trainable=True):
         super(FilterResponseNorm1d, self).__init__(
-            shape=(1, num_features, 1),
+            shape=(1, num_features),
             activated=activated,
             eps=eps,
             eps_trainable=eps_trainable,
         )
-
+        
+    def forward(self, input):
+        self._check_input_dim(input)
+        nu2 = input ** 2
+#         nu2 = torch.mean(input ** 2, axis=1, keepdims=True)
+        input = input * torch.rsqrt(nu2 + torch.abs(self.eps) + self._eps)
+        output = self.gamma * input + self.beta
+        if self.activated:
+            output = torch.max(output, self.tau)
+        return output
+    
     def _check_input_dim(self, input):
-        if input.dim() != 3:
-            raise ValueError('expected 4D input (got {}D input)'
+        if input.dim() != 2:
+            raise ValueError('expected 2D input (got {}D input)'
                              .format(input.dim()))
 
 
@@ -89,7 +90,16 @@ class FilterResponseNorm2d(_FilterResponseNorm):
             eps=eps,
             eps_trainable=eps_trainable,
         )
-
+        
+    def forward(self, input):
+        self._check_input_dim(input)
+        nu2 = torch.mean(input ** 2, axis=[2, 3], keepdims=True)
+        input = input * torch.rsqrt(nu2 + torch.abs(self.eps) + self._eps)
+        output = self.gamma * input + self.beta
+        if self.activated:
+            output = torch.max(output, self.tau)
+        return output
+    
     def _check_input_dim(self, input):
         if input.dim() != 4:
             raise ValueError('expected 4D input (got {}D input)'
